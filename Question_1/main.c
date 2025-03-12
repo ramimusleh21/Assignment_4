@@ -7,6 +7,7 @@
 #include <string.h>
 
 #define BUFFERSIZE 100
+#define MAXARGUMENTS 3
 
 
 // Write a file copy program that takes 2 command line parameters: 
@@ -19,13 +20,21 @@
 
 
 int main(int argc, char** argv) {
-
-	if (argc != 3) {
-		fprintf(stderr, "Usage: %s 'file 1 name' ' File 2 name.", argv[0]);
+	
+// If existing file is not found, safely end program.
+	if (argc != MAXARGUMENTS) {
+		fprintf(stderr, "Usage: %s <Existing File Name> <New File Name\n>.", argv[0]);
+		return 1;
 	}
 
-	char fileOneName[BUFFERSIZE] = argv[1];
-	char fileTwoName[BUFFERSIZE] = argv[2];
+
+	
+	char fileOneName[BUFFERSIZE];	// initialize Existing file name as a string
+	strcpy(fileOneName, argv[1]);	// Set it equal to the first parameter
+
+	char fileTwoName[BUFFERSIZE];	// initialize Existing file name as a string
+	strcpy(fileTwoName, argv[2]);	// Set it equal to the second parameter
+
 
 	FILE* fp = fopen(fileOneName, "r");	// This uses FILE* 
 												// Function and lable 'fp' (file pointer)
