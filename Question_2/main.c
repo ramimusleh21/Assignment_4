@@ -1,15 +1,14 @@
 // Rami Musleh - prog71990 w25 - Assignment 4 Q2
 
-
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include "functions.h"
 
-#define NAMELIMIT 30
-#define MAXROOMS 10
-#define USERSELECTIONLIMIT 2
+
 
 
 // The StayRite Hotel Company consists of a single hotel with a room capacity
@@ -51,119 +50,24 @@
 //	datafile with no data populated.
 
 
-// Create Struct with 
+int main() {
+	FILE* fp = fopen("BookingData.txt", "r");
 
-typedef struct Rooms {
+	if (fp == NULL) {
+		FILE* fp = fopen("BookingData.txt", "w");
+	} 
 
-	int roomNumber;				// room identification number
-	bool roomStatus;			// a marker that indicates whether the room is booked
-	char lastName[NAMELIMIT];	// the last name of the booking guest
-	char firstName[NAMELIMIT];	// the first name of the booking guest.
-
-}ROOMS;
-
-void MainMenu();
-void NumberOfEmptyRooms();
-void ListOfEmptyRooms();
-void AlphaOrderGuests();
-void BookARoom();
-void DeleteABooking();
-
-
-
-int main(void) {
+	AccessRoomStructs();
 	
-	ROOMS rooms[MAXROOMS];
-	MainMenu();
+	bool programOn = true;
+	while (programOn) {
+		int userSelection = MainMenu();
+
+		if (userSelection == false) {
+			programOn = false;
+		}
+	}
+	
 
 	return 0;
 }
-
-
-// FUNCTIONS BELOW:
-
-
-void MainMenu() {
-	printf("\n*** MAIN MENU ***\n\n");
-
-
-	printf("A: See Number of empty rooms\n");
-	printf("______________________________\n\n");
-	printf("B: See List of empty rooms\n");
-	printf("______________________________\n\n");
-	printf("C: See Ordered List of Guests\n");
-	printf("______________________________\n\n");
-	printf("D: Book A Room\n");
-	printf("______________________________\n\n");
-	printf("E: Delete a Booking\n");
-	printf("______________________________\n\n");
-	printf("F: Exit\n");
-	printf("______________________________\n\n");
-
-
-	char userSelection;
-	
-	printf("Select an Option: ");
-	int userSelectionSymbols = scanf("%c", &userSelection);
-	userSelection = toupper(userSelection);
-
-
-	switch (userSelection) {
-
-	case 'A':
-		NumberOfEmptyRooms();
-		break;
-
-	case 'B':
-		ListOfEmptyRooms();
-		break;
-
-	case 'C':
-		AlphaOrderGuests();
-		break;
-
-	case 'D':
-		BookARoom();
-		break;
-
-	case 'E':
-		DeleteABooking();
-		break;
-
-	case 'F':
-		break;
-
-	default:
-		printf("Invalid Entry");
-		return 1;
-	}
-	
-}
-
-void NumberOfEmptyRooms() {
-	printf("Number of Empty Rooms\n");
-
-}
-
-void ListOfEmptyRooms() {
-	printf("List of Empty Rooms\n");
-
-}
-
-void AlphaOrderGuests() {
-	printf("Guests in Alphabetical Order\n");
-
-}
-
-
-void BookARoom() {
-	printf("Book a Room\n");
-
-}
-
-void DeleteABooking() {
-	printf("Delete a Booking\n");
-
-}
-
-
