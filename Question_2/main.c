@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define NAMELIMIT 30
 #define MAXROOMS 10
@@ -61,23 +62,108 @@ typedef struct Rooms {
 
 }ROOMS;
 
+void MainMenu();
+void NumberOfEmptyRooms();
+void ListOfEmptyRooms();
+void AlphaOrderGuests();
+void BookARoom();
+void DeleteABooking();
+
+
 
 int main(void) {
 	
 	ROOMS rooms[MAXROOMS];
-
-	printf("*** MAIN MENU ***\n\n");
-
-
-	char userSelection[USERSELECTIONLIMIT] = {" "};
-
-	printf("Select an Option: ");
-	int userSelectionSymbols = scanf("%s", userSelection);
-	printf("%s\n", userSelection);
-
-	
+	MainMenu();
 
 	return 0;
+}
+
+
+// FUNCTIONS BELOW:
+
+
+void MainMenu() {
+	printf("\n*** MAIN MENU ***\n\n");
+
+
+	printf("A: See Number of empty rooms\n");
+	printf("______________________________\n\n");
+	printf("B: See List of empty rooms\n");
+	printf("______________________________\n\n");
+	printf("C: See Ordered List of Guests\n");
+	printf("______________________________\n\n");
+	printf("D: Book A Room\n");
+	printf("______________________________\n\n");
+	printf("E: Delete a Booking\n");
+	printf("______________________________\n\n");
+	printf("F: Exit\n");
+	printf("______________________________\n\n");
+
+
+	char userSelection;
+	
+	printf("Select an Option: ");
+	int userSelectionSymbols = scanf("%c", &userSelection);
+	userSelection = toupper(userSelection);
+
+
+	switch (userSelection) {
+
+	case 'A':
+		NumberOfEmptyRooms();
+		break;
+
+	case 'B':
+		ListOfEmptyRooms();
+		break;
+
+	case 'C':
+		AlphaOrderGuests();
+		break;
+
+	case 'D':
+		BookARoom();
+		break;
+
+	case 'E':
+		DeleteABooking();
+		break;
+
+	case 'F':
+		break;
+
+	default:
+		printf("Invalid Entry");
+		return 1;
+	}
+	
+}
+
+void NumberOfEmptyRooms() {
+	printf("Number of Empty Rooms\n");
+
+}
+
+void ListOfEmptyRooms() {
+	printf("List of Empty Rooms\n");
+
+}
+
+void AlphaOrderGuests() {
+	printf("Guests in Alphabetical Order\n");
+
+}
+
+
+void BookARoom() {
+	printf("Book a Room\n");
+
+}
+
+void DeleteABooking() {
+	printf("Delete a Booking\n");
+
 }
 
 
