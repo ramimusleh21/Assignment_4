@@ -19,7 +19,7 @@
 // (a)The program uses an array of 10 structures.Each structure should hold
 // a room identification number, a marker that indicates whether the room
 // is booked, the last name of the booking guest, and the first name of the
-// booking guest.
+// booking guest. -> ** DONE **
 //
 // The program displays the following menu :
 //	To choose a function, enter its letter label :
@@ -31,7 +31,7 @@
 //		f) Quit
 //
 // (c) The program successfully executes the promise of each command on its
-//	menu.
+//	menu. 
 //
 // (d)Choice c) will list the guests in alphabetic order, either by first or last
 //	name(selected by user during program execution).
@@ -51,10 +51,12 @@
 
 
 
-int main(int argc, char** argv) {
+int main(void) {
 
 	AccessFile();
 	
+	ROOMS rooms[10]; // Array of rooms
+
 	bool programOn = true;
 	while (programOn) {
 		int userSelection = MainMenu();

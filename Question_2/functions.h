@@ -9,6 +9,9 @@
 	#define BUFFER 255
 	#define FILENAME "BookingData.txt"
 	#define ROOM_FORMAT_OUT "%d, %s, %s, %s\n"
+	#define LINESIZE 50
+	#define INPUTLIMIT 50
+	#define ARRAYLIMIT
 
 
 
@@ -29,7 +32,15 @@
 	ROOMS CreateRoom(	ROOMS RoomName, int RoomNumber, char* status,
 						char* firstName, char* lastName, FILE* fp);
 
+	ROOMS ReplaceRoom(ROOMS RoomName, int RoomNumber, char* status,
+		char* firstName, char* lastName, FILE* fp);
+
 	void NewFile(ROOMS room[]);
+
+	void ReadFile(ROOMS room[]);
+
+	void AddRoom(ROOMS room[], int i, char* status, char* firstName,
+				 char* lastName);
 
 	bool MainMenu();
 
@@ -42,9 +53,9 @@
 
 	void AlphaOrderGuests();
 
-	void BookARoom();
+	bool BookARoom();
 
-	void DeleteABooking();
+	bool DeleteABooking();
 
 
 
