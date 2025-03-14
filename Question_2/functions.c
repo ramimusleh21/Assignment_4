@@ -7,7 +7,54 @@
 #include <stdio.h>
 #include "functions.h"
 
+
+void NewFile(ROOMS room[]) {
+	
+	fprintf(stdin, "creating new File\n");
+	FILE* fp = fopen(FILENAME, "w");
+
+	for (int i = 1; i <= MAXROOMS; i++) {
+		room[i].roomNumber = i;
+		room[i] = CreateRoom(room[i], i, "empty", "", "", fp);
+		printf("2: Room %d Created and Added to BookingData.txt\n", i);
+
+	}
+	fclose(fp);
+}
+
+
+ROOMS CreateRoom(ROOMS RoomName, int RoomNumber, char* status, char* firstName, char* lastName, FILE* fp) {
+
+	RoomName.roomNumber = RoomNumber;
+	strcpy(RoomName.roomStatus, status, NAMELIMIT - 1);
+	strcpy(RoomName.firstName, firstName, NAMELIMIT - 1);
+	strcpy(RoomName.lastName, lastName, NAMELIMIT - 1);
+
+	fprintf(fp, ROOM_FORMAT_OUT, RoomNumber, status, firstName, lastName);
+	fprintf(stdin, "Room %d created in BookingData.txt\n", RoomNumber);
+
+
+	return RoomName;
+
+}
+
 int AccessFile() {
+
+	FILE* fp = fopen("BookingData.txt", "r");
+
+	if (fp == NULL) {
+		NewFile(rooms);
+		fprintf(stdout, "New File Created\n");
+	}
+	else {
+		fclose(fp);
+	}
+}
+
+
+
+void NumberOfEmptyRooms() {
+	printf("Number of Empty Rooms\n\n");
 
 	FILE* fp = fopen("BookingData.txt", "r");
 
@@ -15,156 +62,19 @@ int AccessFile() {
 		fprintf(stderr, "Error Opening File");
 		return 1;
 	}
-}
-
-AccessRoomStructs() {
-	ROOMS room1;
-	room1.roomNumber = 1;
-	room1.roomStatus = true;
-	strncpy(room1.firstName, "Rami", NAMELIMIT - 1);
-	strncpy(room1.lastName, "Musleh", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room1.roomNumber, room1.firstName, room1.lastName);
-	if (room1.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else{
-		printf("Room is vacant\n");
+	
+	
+	char BookingData[MAXLIMIT];
+	for (int i = 1; i <= 10 ; i++) {
+		char booked;
+		fgets(BookingData, sizeof(BookingData), fp);
+			if (fscanf(fp, "%c", &booked) == 1 && booked == 0) {
+				printf("Room %d is empty\n", i);
+		}
+		
 	}
 
-
-	ROOMS room2;
-	room2.roomNumber = 2;
-	room2.roomStatus = false;
-	strncpy(room2.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room2.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room2.roomNumber, room2.firstName, room2.lastName);
-	if (room2.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-
-	ROOMS room3;
-	room3.roomNumber = 3;
-	room3.roomStatus = false;
-	strncpy(room3.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room3.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room3.roomNumber, room3.firstName, room3.lastName);
-
-	if (room3.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room4;
-	room4.roomNumber = 4;
-	room4.roomStatus = false;
-	strncpy(room4.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room4.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room4.roomNumber, room4.firstName, room4.lastName);
-	if (room4.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room5;
-	room5.roomNumber = 5;
-	room5.roomStatus = false;
-	strncpy(room5.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room5.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room5.roomNumber, room5.firstName, room5.lastName);
-	if (room5.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room6;
-	room6.roomNumber = 6;
-	room6.roomStatus = false;
-	strncpy(room6.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room6.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room6.roomNumber, room6.firstName, room6.lastName);
-	if (room6.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room7;
-	room7.roomNumber = 7;
-	room7.roomStatus = false;
-	strncpy(room7.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room7.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room7.roomNumber, room7.firstName, room7.lastName);
-	if (room7.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room8;
-	room8.roomNumber = 8;
-	room8.roomStatus = false;
-	strncpy(room8.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room8.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room8.roomNumber, room8.firstName, room8.lastName);
-	if (room8.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room9;
-	room9.roomNumber = 9;
-	room9.roomStatus = false;
-	strncpy(room9.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room9.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room9.roomNumber, room9.firstName, room9.lastName);
-	if (room9.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-	ROOMS room10;
-	room10.roomNumber = 10;
-	room10.roomStatus = false;
-	strncpy(room10.firstName, "\0", NAMELIMIT - 1);
-	strncpy(room10.lastName, "\0", NAMELIMIT - 1);
-
-	printf("Room %i: %s %s - ", room10.roomNumber, room10.firstName, room10.lastName);
-	if (room10.roomStatus) {
-		printf("Room is Booked\n");
-	}
-	else {
-		printf("Room is vacant\n");
-	}
-
-}
-
-void NumberOfEmptyRooms() {
-	printf("Number of Empty Rooms\n\n");
+	fclose(fp);
 
 }
 

@@ -50,14 +50,10 @@
 //	datafile with no data populated.
 
 
-int main() {
-	FILE* fp = fopen("BookingData.txt", "r");
 
-	if (fp == NULL) {
-		FILE* fp = fopen("BookingData.txt", "w");
-	} 
+int main(int argc, char** argv) {
 
-	AccessRoomStructs();
+	AccessFile();
 	
 	bool programOn = true;
 	while (programOn) {
