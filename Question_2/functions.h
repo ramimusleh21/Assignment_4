@@ -11,7 +11,7 @@
 	#define ROOM_FORMAT_OUT "%d, %s, %s, %s\n"
 	#define LINESIZE 50
 	#define INPUTLIMIT 50
-	#define ARRAYLIMIT
+	#define ARRAYLIMIT 4
 
 
 
@@ -25,33 +25,44 @@
 
 	}ROOMS;
 
-	ROOMS rooms[10]; // Array of rooms
+	ROOMS rooms[MAXROOMS]; // Array of rooms
+
+
+
 
 // FUNCTIONS HEADERS
 
+// FILE FUNCTIONS
+	bool AccessFile();
+	bool ReadFile(ROOMS room[]);
+	bool NewFile(ROOMS room[]);
+
+
+// ROOM STRUCT FUNCTIONS
 	ROOMS CreateRoom(	ROOMS RoomName, int RoomNumber, char* status,
 						char* firstName, char* lastName, FILE* fp);
 
 	ROOMS ReplaceRoom(ROOMS RoomName, int RoomNumber, char* status,
 		char* firstName, char* lastName, FILE* fp);
 
-	void NewFile(ROOMS room[]);
 
-	void ReadFile(ROOMS room[]);
-
-	void AddRoom(ROOMS room[], int i, char* status, char* firstName,
+	
+	
+// ROOM FUNCTIONS
+	bool AddRoom(ROOMS room[], int i, char* status, char* firstName,
 				 char* lastName);
+
+	bool DeleteRoom(ROOMS room[], int i, char* status, char* firstName, char* lastName);
 
 	bool MainMenu();
 
+	bool NumberOfEmptyRooms();
 
-	int AccessFile();
+	bool ListOfEmptyRooms();
 
-	void NumberOfEmptyRooms();
-
-	void ListOfEmptyRooms();
-
-	void AlphaOrderGuests();
+	bool AlphaOrderGuests();
+	bool OrderByFirstName();
+	bool OrderByLastName();
 
 	bool BookARoom();
 
