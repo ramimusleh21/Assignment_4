@@ -139,7 +139,7 @@ bool OrderByFirstNameOne(ROOMS* rooms) {
 	int counter = 0;
 	for (int i = 0; i < MAXROOMS; i++) {
 		if (strcmp(rooms[i].roomStatus, unbooked)) {
-			strcpy(placeHolder, rooms[i].roomStatus);
+			strcpy(placeHolder, rooms[i].firstName);
 			char* temp = strcat(placeHolder, " ");
 			char* fullName = strcat(temp, rooms[i].lastName);
 			strcpy(nameArray[counter], fullName);

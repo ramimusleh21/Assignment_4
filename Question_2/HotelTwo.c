@@ -154,7 +154,7 @@ bool OrderByFirstNameTwo(ROOMS* rooms) {
 	int counter = 0;
 	for (int i = MAXROOMS; i < TOTALROOMS; i++) {
 		if (strcmp(rooms[i].roomStatus, unbooked)) {
-			strcpy(placeHolder, rooms[i].roomStatus);
+			strcpy(placeHolder, rooms[i].firstName);
 			char* temp = strcat(placeHolder, " ");
 			char* fullName = strcat(temp, rooms[i].lastName);
 			strcpy(nameArray[counter], fullName);
