@@ -64,7 +64,7 @@ bool ReadFile(ROOMS* rooms) {
 
 	fclose(fp);
 
-	FILE* tfp = fopen("tempfile.txt", "w");
+	FILE* tfp = fopen(TEMPFILENAME, "w");
 	if (tfp == NULL) {
 		fprintf(stderr, "Error Opening File");
 		return false;
@@ -76,9 +76,9 @@ bool ReadFile(ROOMS* rooms) {
 
 	fclose(tfp);
 
-	(void)rename("tempfile.txt", FILENAME);
+	(void)rename(TEMPFILENAME, FILENAME);
 
-	remove("tempfile.txt");
+	remove(TEMPFILENAME);
 
 	return true;
 }

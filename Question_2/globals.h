@@ -7,7 +7,8 @@
 #define TOTALROOMS 20
 #define MAXROOMS 10
 #define BUFFER 255
-#define FILENAME "BookingData.txt"
+#define FILENAME "../Question_2/BookingData.txt"
+#define TEMPFILENAME "../Question_2/tempfile.txt"
 #define ROOM_FORMAT_PRINT "Room %d is a %s Room Booked out to %s %s.\n"
 #define ROOM_FORMAT_OUT "%d,%s,%s,%s,%d,%s\n"
 #define SCAN_ROOM_FORMAT_OUT "%d,%49s[^,],%49s[^,],%49s[^,],%d,%49s[^,]\n"
