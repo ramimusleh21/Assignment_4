@@ -258,8 +258,8 @@ bool BookARoomTwo(ROOMS* rooms) {
 
 	printf("Book a Room\n\n");
 
-	printf("A: King Room\n");
-	printf("B: Family Room\n");
+	printf("A: King Room (1-5)\n");
+	printf("B: Family Room (6-10)\n");
 	printf("Select a Room Type: ");
 
 	char roomInput;
@@ -358,6 +358,20 @@ bool BookARoomTwo(ROOMS* rooms) {
 
 	int userInputAsInt = atoi(userInput);
 	
+	if (roomInput == 'A') {
+		if (userInputAsInt < 1 || userInputAsInt > 5) {
+			printf("\nKing Rooms are Only rooms 1-5.\n Please try again\n");
+			return true;
+		}
+	}
+
+	else if (roomInput == 'B') {
+		if (userInputAsInt < 6 || userInputAsInt > 10) {
+			printf("\nFamily Rooms are Only rooms 6-10.\nPlease try again\n");
+			return true;
+		}
+	}
+
 	if (userInputAsInt < 1 || userInputAsInt > MAXROOMS) {
 		printf("\nInvalid Entry, Please Try again.\n");
 		return false;
@@ -499,16 +513,16 @@ bool AddRoomTwo(ROOMS* room, int input, char* status, char* firstName, char* las
 bool DeleteABookingTwo(ROOMS* rooms) {
 	printf("Delete a Booking\n\n");
 
-	char userInput[INPUTLIMIT] = "";
+	char userInput[INPUTLIMIT] = { 0 };
 
-	printf("Which Bookin would you Like to delete (Enter B to go back to main menu): ");
+	printf("Which Booking would you Like to delete (Enter B to go back to main menu): ");
 	(void)scanf(" %s", &userInput);
 	size_t lengthOfInput = strlen(userInput);
 
 
 	for (int i = 0; i < lengthOfInput; i++) {
 		if (isdigit(userInput[i]) != 0) {
-
+			
 		}
 
 		else if (userInput[i] != 'b' && userInput[i] != 'B') {
@@ -550,14 +564,14 @@ bool DeleteABookingTwo(ROOMS* rooms) {
 		return false;
 	}
 
-	userInputAsInt = userInputAsInt + 10;
+	userInputAsInt = userInputAsInt + MAXROOMS;
 
 	for (int i = 0; i < userInputAsInt; i++) {
 		(fgets(fileText, LINESIZE, fp));
 	}
 
 	if (strstr(fileText, unbooked)) {
-		printf("There is no booking in Room %d. Please Select Again.\n", userInputAsInt);
+		printf("There is no booking in Room %d. Please Select Again.\n", userInputAsInt - MAXROOMS);
 		printf("Back to Main Menu\n");
 		return true;
 	}
@@ -709,5 +723,5 @@ bool MainMenuTwo(ROOMS* rooms) {
 			}
 		}
 	}
-	return true;
+	return ProgramStatus;
 }

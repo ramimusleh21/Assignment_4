@@ -244,8 +244,8 @@ bool BookARoomOne(ROOMS* rooms) {
 	printf("Book a Room\n\n");
 
 	
-	printf("A: King Room\n");
-	printf("B: Family Room\n");
+	printf("A: King Room (1-5)\n");
+	printf("B: Family Room (6-10)\n");
 	printf("Select a Room Type: ");
 
     char roomInput;
@@ -294,7 +294,8 @@ bool BookARoomOne(ROOMS* rooms) {
 		return false;
 	}
 
-	char userInput[INPUTLIMIT] = "";
+	char userInput[INPUTLIMIT] = { 0 };
+
 	printf("Which Room would you Like to Book (Enter B to go back to main menu): ");
 	(void)scanf(" %s", &userInput);
 	size_t lengthOfInput = strlen(userInput);	// set to size_t instead 
@@ -341,6 +342,19 @@ bool BookARoomOne(ROOMS* rooms) {
 
 	int userInputAsInt = atoi(userInput);
 
+	if (roomInput == 'A') {
+		if (userInputAsInt < 1 || userInputAsInt > 5) {
+			printf("\nKing Rooms are Only rooms 1-5.\n Please try again\n");
+			return true;
+		}
+	}
+
+	else if (roomInput == 'B') {
+		if (userInputAsInt < 6 || userInputAsInt > 10) {
+			printf("\nFamily Rooms are Only rooms 6-10.\nPlease try again\n");
+			return true;
+		}
+	}
 
 	if (userInputAsInt < 1 || userInputAsInt > MAXROOMS) {
 		printf("\nInvalid Entry, Please Try again.\n");
@@ -473,7 +487,7 @@ bool DeleteABookingOne(ROOMS* rooms) {
 
 	char userInput[INPUTLIMIT] = "";
 
-	printf("Which Bookin would you Like to delete (Enter B to go back to main menu): ");
+	printf("Which Booking would you Like to delete (Enter B to go back to main menu): ");
 	(void)scanf(" %s", &userInput);
 	size_t lengthOfInput = strlen(userInput);
 
@@ -676,5 +690,5 @@ bool MainMenuOne(ROOMS* rooms) {
 			}
 		}
 	}
-	return true;
+	return ProgramStatus;
 }

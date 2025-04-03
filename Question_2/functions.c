@@ -170,6 +170,7 @@ bool PrintAllRooms(ROOMS* rooms) {
 	for (int i = MAXROOMS; i < TOTALROOMS; i++) {
 		if (strcmp(rooms[i].firstName, ROOM_IS_EMPTY)) {
 			PrintRoom(rooms, i);
+			counter++;
 		}
 	}
 	if (counter == 0) {
