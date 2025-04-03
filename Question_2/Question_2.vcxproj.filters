@@ -21,9 +21,24 @@
     <ClCompile Include="functions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HotelOne.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HotelTwo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HotelOne.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HotelTwo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

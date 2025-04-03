@@ -128,10 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="functions.c" />
+    <ClCompile Include="HotelOne.c" />
+    <ClCompile Include="HotelTwo.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="functions.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="HotelOne.h" />
+    <ClInclude Include="HotelTwo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

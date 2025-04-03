@@ -1,13 +1,32 @@
 // Rami Musleh - prog71990 w25 - Assignment 4 Q1
 
+
+//Question 1: File I / O and toupper()
+// Specifications : 4.00 / 8.00 (The program produces correct results
+// but does not display them correctly or the following issues were noted : )
+//—file size should not be limitted to input buffer size
+
+// Readability + Design : 8.00 / 8.00 (The code is exceptionally well organized
+// and readable due to the use of good variable names, data and function structure.
+// The code is designed ‘defensively’(meaning garbage is kept out).The code allows
+// for both effective testing and extension.)
+
+// Reusability : 2.00 / 4.00 (The code appears to be designed / implemented by
+// machine and /or without regard to readability or design concepts taught in the
+// course or the following issues were noted : )
+//--Functionality should be split into separate components, each having its own responsibility. (2)
+
+// Documentation : 4.00 / 4.00 (The documentation is well written and clearly explains what
+// the code is accomplishing and how.)
+
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-
-#define BUFFERSIZE 100
-#define MAXARGUMENTS 3
+#include "functions.h"
+#include "globals.h"
 
 
 // Write a file copy program that takes 2 command line parameters: 
@@ -26,21 +45,15 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "Usage: %s <Existing File Name> <New File Name\n>.", argv[0]);
 		return 1;
 	}
-
-
 	
-	char fileOneName[BUFFERSIZE];	// initialize Existing file name as a string
+	char fileOneName[FILESIZE];	// initialize Existing file name as a string
 	strcpy(fileOneName, argv[1]);	// Set it equal to the first parameter
 
-	char fileTwoName[BUFFERSIZE];	// initialize Existing file name as a string
-	strcpy(fileTwoName, argv[2]);	// Set it equal to the second parameter
+	char fileTwoName[FILESIZE];	
+	strcpy(fileTwoName, argv[2]);	
 
 
-	FILE* fp = fopen(fileOneName, "r");	// This uses FILE* 
-												// Function and lable 'fp' (file pointer)
-												// to open a file in the source file folder
-												// the "r" means its only reading the file.
-
+	FILE* fp = fopen(fileOneName, "r");	
 
 // Validate if file opened correctly, if not, return error and end safely
 	if (fp == NULL) {
@@ -50,35 +63,20 @@ int main(int argc, char** argv) {
 
 	fprintf(stdout, "%s Accessed\n", fileOneName); // Validate file opened
 
-// Copy text in File and store it in variable
-	char fileText[BUFFERSIZE] = { 0 };
+	char fileText[BUFFERSIZE]; // Copy text in File and store it in variable
 	fgets(fileText, BUFFERSIZE, fp);
 
-
-// make all characters uppercase using toupper()
-	int fileTextLength = strlen(fileText);
-	for (int i = 0; i < fileTextLength; i++) {
-		fileText[i] = toupper(fileText[i]);
-	}
+	strcpy(fileText, MakeUpper(fileText)); // make all characters uppercase using toupper()
+	fclose(fp); // Close File 1
 	
-// Close File 1
-	fclose(fp);
-	
-// Create a new file
-	fp = fopen(fileTwoName, "w");
-
-	if (fp == NULL) {
-		fprintf(stderr, "error opening file\n");
+	fp = CreateFile(fileTwoName); // Create a new file
+	if (CreateFile == NULL) {
 		return 1;
 	}
 
-	fprintf(stdout, "%s Accessed\n", fileTwoName);
+	PrintToFile(fp, fileText); // paste text into new file
 	
-// paste text into new file
-	fprintf(fp, fileText);
-	
-// Close file 2
-	fclose(fp);
+	fclose(fp); // Close file 2
 
 	return 0;
 }
