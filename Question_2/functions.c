@@ -1,4 +1,5 @@
-// Rami Musleh - prog71990 w25 - Assignment 4 Q2
+// Rami Musleh - prog71990 w25 - Assignment 4 Q2 Refactor
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
@@ -7,10 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "functions.h"
+#include "HotelOne.h"
+#include "HotelTwo.h"
+#include "globals.h"
 
 
 // FILE FUNCTIONS
-bool AccessFile() {
+bool AccessFile(ROOMS* rooms) {
 
 	FILE* fp = fopen(FILENAME, "r");
 
@@ -20,15 +24,15 @@ bool AccessFile() {
 		fprintf(stdout, "New File Created: %s", FILENAME);
 	}
 	else {
+		fclose(fp);
 		userSelection = ReadFile(rooms);
 		fprintf(stdout, "Accessed file: %s\n", FILENAME);
-		fclose(fp);
 	}
 
 	return userSelection;
 }
 
-bool ReadFile(ROOMS room[]) {
+bool ReadFile(ROOMS* rooms) {
 
 	FILE* fp = fopen(FILENAME, "r");
 
@@ -37,15 +41,24 @@ bool ReadFile(ROOMS room[]) {
 		return false;
 	}
 
-	char data[MAXROOMS][LINESIZE] = { 0 };
+	char data[TOTALROOMS][LINESIZE] = { 0 };
 	int lineCounter = 0;
+	int read = 0;
+	while (fgets(data[lineCounter], LINESIZE, fp) != NULL && lineCounter < TOTALROOMS) {
+		read = sscanf(data[lineCounter], "%d,%49[^,],%49[^,],%49[^,],%d,%49[^\n]",
+			&rooms[lineCounter].roomNumber,
+			rooms[lineCounter].roomStatus,
+			rooms[lineCounter].firstName,
+			rooms[lineCounter].lastName,
+			&rooms[lineCounter].hotel,
+			rooms[lineCounter].type);
 
-	while (!feof(fp)) {
-		for (int i = 1; i <= MAXROOMS; i++) {
-			if (fgets(data[lineCounter], LINESIZE, fp) != NULL) {
-				lineCounter++;
-			}
-			//fprintf(fp, data[i]);
+		if (read == 6) {
+			lineCounter++;
+		}
+		else {
+			printf("File format incorrect\n");
+			return false;
 		}
 	}
 
@@ -57,61 +70,78 @@ bool ReadFile(ROOMS room[]) {
 		return false;
 	}
 
-	for (int i = 0; i < MAXROOMS; i++) {
+	for (int i = 0; i < TOTALROOMS; i++) {
 		fprintf(tfp, data[i]);
 	}
 
-
 	fclose(tfp);
 
-	rename("tempfile.txt", FILENAME);
+	(void)rename("tempfile.txt", FILENAME);
 
 	remove("tempfile.txt");
+
 	return true;
 }
 
-bool NewFile(ROOMS room[]) {
+bool NewFile(ROOMS* room) {
 
 	FILE* fp = fopen(FILENAME, "w");
 	if (fp == NULL) {
 		fprintf(stderr, "Error Opening File");
 		return false;
 	}
-
-
-	for (int i = 1; i <= MAXROOMS; i++) {
-		room[i].roomNumber = i;
-		room[i] = CreateRoom(room[i], i, "empty", "", "", fp);
-
+	int roomCount = 0;
+	for (int i = 1; i <= 5; i++) {
+		room[roomCount].roomNumber = i;
+		room[roomCount] = CreateRoom(room[i], i, "empty", ROOM_IS_EMPTY, ROOM_IS_EMPTY,
+										HotelOne, "King", fp);
+		roomCount++;
 	}
+
+	for (int i = 6; i <= MAXROOMS; i++) {
+		room[roomCount].roomNumber = i;
+		room[roomCount] = CreateRoom(room[i], i, "empty", ROOM_IS_EMPTY, ROOM_IS_EMPTY,
+										HotelOne, "Queen+2", fp);
+		roomCount++;
+	}
+
+	for (int i = 1; i <= 5; i++) {
+		room[roomCount].roomNumber = i;
+		room[roomCount] = CreateRoom(room[i], i, "empty", ROOM_IS_EMPTY, ROOM_IS_EMPTY, HotelTwo, "King", fp);
+		roomCount++;
+	}
+
+	for (int i = 6; i <= MAXROOMS; i++) {
+		room[roomCount].roomNumber = i;
+		room[roomCount] = CreateRoom(room[i], i, "empty", ROOM_IS_EMPTY, ROOM_IS_EMPTY, HotelTwo, "Queen+2", fp);
+		roomCount++;
+	}
+
 	fclose(fp);
 	return true;
 }
 
+void ReplaceRoomV2(ROOMS room, int RoomNumber, char* status, char* firstName,
+	char* lastName) {
 
+	room.roomNumber = RoomNumber;
+	strcpy(room.roomStatus, status);
+	strcpy(room.firstName, firstName);
+	strcpy(room.lastName, lastName);
 
-
-
-// ROOM STRUCT FUNCTIONS
-ROOMS ReplaceRoom(ROOMS RoomName, int RoomNumber, char* status, char* firstName, char* lastName, FILE* fp) {
-
-	RoomName.roomNumber = RoomNumber;
-	strcpy(RoomName.roomStatus, status);
-	strcpy(RoomName.firstName, firstName);
-	strcpy(RoomName.lastName, lastName);
-
-
-	return RoomName;
 }
 
-ROOMS CreateRoom(ROOMS RoomName, int RoomNumber, char* status, char* firstName, char* lastName, FILE* fp) {
+ROOMS CreateRoom(ROOMS RoomName, int RoomNumber, char* status, char* firstName, char* lastName,
+				HOTEL hotel, char* type, FILE* fp) {
 
 	RoomName.roomNumber = RoomNumber;
 	strcpy(RoomName.roomStatus, status);
 	strcpy(RoomName.firstName, firstName);
 	strcpy(RoomName.lastName, lastName);
+	RoomName.hotel = hotel;
+	strcpy(RoomName.type, type);
 
-	fprintf(fp, ROOM_FORMAT_OUT, RoomNumber, status, firstName, lastName);
+	fprintf(fp, ROOM_FORMAT_OUT, RoomNumber, status, firstName, lastName, hotel, type);
 	fprintf(stdin, "Room %d created in BookingData.txt\n", RoomNumber);
 
 
@@ -119,572 +149,64 @@ ROOMS CreateRoom(ROOMS RoomName, int RoomNumber, char* status, char* firstName, 
 }
 
 
-// ROOM FUNCTIONS
-bool AddRoom(ROOMS room[], int i,char* status, char* firstName, char* lastName) {
-
-	FILE* fp = fopen(FILENAME, "r");
-
-	if (fp == NULL) {
-		fprintf(stderr, "Error Opening File");
-		return false;
-	}
-
-	char data[MAXROOMS][LINESIZE] = { 0 };
-	int lineCounter = 0;
-
-	while (!feof(fp)) {
-		for (int i = 1; i <= MAXROOMS; i++) {
-			if (fgets(data[lineCounter], LINESIZE, fp) != NULL) {
-				lineCounter++;
-			}
-		}
-	}
-
-	fclose(fp);
+//****** PRINT FUNCTIONS ******
+bool PrintAllRooms(ROOMS* rooms) {
+	printf("List of booked Rooms\n\n");
 	
-	FILE* tfp = fopen("tempfile.txt", "w");
-	if (tfp == NULL) {
-		fprintf(stderr, "Error Opening File");
-		return false;
-	}
-	if (i != 1) {
-		for (int j = 0; j < i-1; j++) {
-			if (j != i) {
-				fprintf(tfp, data[j]);
-			}
+	int counter = 0;
+	printf("Hotel 1 (Original):\n\n");
+	for (int i = 0; i < MAXROOMS; i++) {
+		if (strcmp(rooms[i].firstName, ROOM_IS_EMPTY)) {
+			PrintRoom(rooms, i);
+			counter++;
 		}
 	}
-	
-		room[i].roomNumber = i;
-		strcpy(room[i].roomStatus, status);
-		strcpy(room[i].firstName, firstName);
-		strcpy(room[i].lastName, lastName);
-		room[i] = ReplaceRoom(room[i], i, status, firstName, lastName, tfp);
-		
-		fprintf(tfp, ROOM_FORMAT_OUT, i, status, firstName, lastName);
-
-		if (i != 10) {
-			for (int j = i; j < MAXROOMS; j++) {
-				fprintf(tfp, data[j]);
-				
-			}
-		}
-		
-	
-		fclose(tfp);
-		remove(FILENAME);
-		rename("tempfile.txt", FILENAME);
-
-		printf("\nBooking created\n");
-		
-		return true;
-}
-
-
-bool DeleteRoom(ROOMS room[], int i, char* status, char* firstName, char* lastName) {
-
-	FILE* fp = fopen(FILENAME, "r");
-
-	if (fp == NULL) {
-		fprintf(stderr, "Error Opening File");
-		return false;
+	if (counter == 0) {
+		printf("There are no Bookings at Hotel 1\n");
 	}
 
-	char data[MAXROOMS][LINESIZE] = { 0 };
-	int lineCounter = 0;
-
-	while (!feof(fp)) {
-		for (int i = 1; i <= MAXROOMS; i++) {
-			if (fgets(data[lineCounter], LINESIZE, fp) != NULL) {
-				lineCounter++;
-			}
-
+	counter = 0;
+	printf("\nHotel 2 (New):\n\n");
+	for (int i = MAXROOMS; i < TOTALROOMS; i++) {
+		if (strcmp(rooms[i].firstName, ROOM_IS_EMPTY)) {
+			PrintRoom(rooms, i);
 		}
 	}
-
-	fclose(fp);
-
-	FILE* tfp = fopen("tempfile.txt", "w");
-	if (tfp == NULL) {
-		fprintf(stderr, "Error Opening File");
-		return false;
+	if (counter == 0) {
+		printf("There are no Bookings at Hotel 2\n");
 	}
-
-	if (i != 1) {
-		for (int j = 0; j < i - 1; j++) {
-			if (j != i) {
-				fprintf(tfp, data[j]);
-			}
-		}
-	}
-
-	room[i].roomNumber = i;
-	strcpy(room[i].roomStatus, status);
-	strcpy(room[i].firstName, firstName);
-	strcpy(room[i].lastName, lastName);
-	room[i] = ReplaceRoom(room[i], i, status, firstName, lastName, tfp);
-
-	fprintf(tfp, ROOM_FORMAT_OUT, i, status, firstName, lastName);
-
-	if (i != 10) {
-		for (int j = i; j < MAXROOMS; j++) {
-			fprintf(tfp, data[j]);
-		}
-	}
-
-	fclose(tfp);
-	remove(FILENAME);
-	rename("tempfile.txt", FILENAME);
-
-	printf("Booking Deleted\n");
 	return true;
 }
 
 
-bool NumberOfEmptyRooms() {
-	printf("Number of Empty Rooms\n\n");
-
-	FILE* fp = fopen(FILENAME, "r");
-
-	if (fp == NULL) {
-		fprintf(stderr, "Error Opening File");
-		return false;
+void PrintRoom(ROOMS* rooms, int i) {
+	if (!strcmp(rooms[i].type, "Queen+2")) {
+		printf(ROOM_FORMAT_PRINT, rooms[i].roomNumber, "Family", rooms[i].firstName,
+			rooms[i].lastName);
 	}
-
-	char fileText[BUFFER] = { 0 };
-	char unbooked[NAMELIMIT] = "empty";
-	char LINE[LINESIZE];
-
-	int roomCounter = 0;
-	int lineCounter = 1;
-	
-	while (fgets(fileText, LINESIZE, fp)) {
-		
-		
-
-		if (strstr(fileText, unbooked)) {
-			roomCounter++;
-		}
-
-		lineCounter++;
+	else {
+		printf(ROOM_FORMAT_PRINT, rooms[i].roomNumber, rooms[i].type, rooms[i].firstName,
+			rooms[i].lastName);
 	}
-	fprintf(stdout, "\nThere are %d Rooms Available for Booking\n\n", roomCounter);
-
-
-		fclose(fp);
-
-	return true;
-}
-
-bool ListOfEmptyRooms() {
-	printf("List of Empty Rooms\n\n");
-
-	FILE* fp = fopen(FILENAME, "r");
-	char fileText[BUFFER] = { 0 };
-
-	if (fp == NULL) {
-		fprintf(stderr, "Error Opening File");
-		return false;
-	}
-
-	
-	char unbooked[NAMELIMIT] = "empty";
-	char LINE[LINESIZE];
-	int roomCounter = 0;
-	int lineCounter = 1;
-
-	while (fgets(fileText, LINESIZE, fp)) {
-
-
-
-		if (strstr(fileText, unbooked)) {
-			printf("Room %d is empty\n", lineCounter);
-			roomCounter++;
-		}
-
-
-		lineCounter++;
-	}
-	
-	if (roomCounter == 0) {
-		printf("There are 0 available Rooms\n");
-	}
-
-	fclose(fp);
-	return true;
-}
-
-bool AlphaOrderGuests() {
-	bool userSelection = true;
-	
-	printf("Guests in Alphabetical Order\n\n");
-
-	printf("F: Order by first name\n");
-	printf("L: Order by Last name\n");
-	printf("B: Back to main menu\n");
-
-	char userInput;
-	printf("\nSelect an Option: ");
-	
-	int userInputSymbols = scanf(" %c", &userInput);
-	userInput = toupper(userInput);
-
-	switch (userInput){
-	case 'F':
-		userSelection = OrderByFirstName();
-		return userSelection;
-	case 'L':
-		userSelection = OrderByLastName();
-		return userSelection;
-	case 'B':
-		printf("Back to Main Menu\n");
-		return true;
-	default:
-		printf("Invalid Selection\n");
-		return true;
-	}
-
 }
 
 
-
-bool OrderByFirstName() {
-	printf("\nOrdered by First Name\n\n");
-
-	char nameArray[MAXROOMS][NAMELIMIT] = { 0 };
-
-	FILE* fp = fopen(FILENAME, "r");  // Open file for reading
-	if (fp == NULL) {
-		printf("Error: Could not open file.\n");
-		return false;
-	}
-
-	char line[LINESIZE];
-	int lineCounter = 0;
-	
-	while (fgets(line, sizeof(line), fp)) {
-	
-		char* name[ARRAYLIMIT]; 
-		int wordCounter = 0;
-
-		char* token = strtok(line, " \n");  
-		while (token != NULL && wordCounter < ARRAYLIMIT) {
-			name[wordCounter++] = token;
-			token = strtok(NULL, " \n");
-		}
-
-		if (wordCounter >= ARRAYLIMIT) {
-			char* fullName = strcat(name[2], name[3]);
-			strcpy(nameArray[lineCounter], fullName);
-		}
-		lineCounter++;
-	}
-
-	int numberOfGuests = sizeof(nameArray) / sizeof(nameArray[0]);
-	char temp[NAMELIMIT];
-	
-	
-	for (int i = 0; i < numberOfGuests - 1; i++) {	
-		int LowestElement = i;
-
-		for (int j = i + 1; j < numberOfGuests; j++) {
-			{
-				if (strcmp(nameArray[j], nameArray[LowestElement]) < 0) {
-					LowestElement = j;
-				}
-			}
-		}
-
-		if (LowestElement != i) {
-			
-			strcpy(temp, nameArray[i]);
-			strcpy(nameArray[i], nameArray[LowestElement]);
-			strcpy(nameArray[LowestElement], temp);
-		}
-	}
-	
-		for (int i = 0; i < numberOfGuests; i++) {
-			printf("%s\n", nameArray[i]);
-			strcpy(nameArray[i], "\0");
-			
-		}
-	
-	
-		
-	
-	fclose(fp);
-	return true;
-}
-
-
-bool OrderByLastName() {
-	printf("\nOrdered by Last Name\n\n");
-
-	char nameArray[MAXROOMS][NAMELIMIT] = { 0 };
-
-	FILE* fp = fopen(FILENAME, "r");  // Open file for reading
-	if (fp == NULL) {
-		printf("Error: Could not open file.\n");
-		return false;
-	}
-
-	char line[LINESIZE];
-	int lineCounter = 0;
-	char spacer[NAMELIMIT] = ", " ;
-
-	while (fgets(line, sizeof(line), fp)) {
-
-		char* name[ARRAYLIMIT];
-		int wordCounter = 0;
-
-		char* token = strtok(line, " \n");
-		while (token != NULL && wordCounter < ARRAYLIMIT) {
-			name[wordCounter++] = token;
-			token = strtok(NULL, " ,\n");
-		}
-
-		if (wordCounter >= ARRAYLIMIT) {
-			strcat(name[3], spacer);
-			char* fullName = strcat(name[3], name[2]);
-			strcpy(nameArray[lineCounter], fullName);
-		}
-		lineCounter++;
-	}
-
-	int numberOfGuests = sizeof(nameArray) / sizeof(nameArray[0]);
-	char temp[NAMELIMIT];
-
-
-	for (int i = 0; i < numberOfGuests - 1; i++) {
-		int LowestElement = i;
-
-		for (int j = i + 1; j < numberOfGuests; j++) {
-			{
-				if (strcmp(nameArray[j], nameArray[LowestElement]) < 0) {
-					LowestElement = j;
-				}
-			}
-		}
-
-		if (LowestElement != i) {
-
-			strcpy(temp, nameArray[i]);
-			strcpy(nameArray[i], nameArray[LowestElement]);
-			strcpy(nameArray[LowestElement], temp);
-		}
-	}
-
-	for (int i = 0; i < numberOfGuests; i++) {
-		printf("%s\n", nameArray[i]);
-		strcpy(nameArray[i], "\0");
-
-	}
-
-	fclose(fp);
-	return true;
-}
-
-
-bool BookARoom() {
-	printf("Book a Room\n\n");
-	
-	char userInput[INPUTLIMIT] = "";
-	printf("Which Room would you Like to Book (Enter B to go back to main menu): ");
-	scanf(" %s", &userInput);
-	int lengthOfInput = strlen(userInput);
-
-
-	for (int i = 0; i < lengthOfInput; i++) {
-		if (isdigit(userInput[i]) != 0) {
-
-		}
-
-		else if (userInput[i] != 'b' && userInput[i] != 'B') {
-
-			printf("\nInvalid Entry, Please Try again.\n");
-			return false;
-		}
-
-		else if (userInput[i] == 'b' || userInput[i] == 'B') {
-			if (lengthOfInput > 1) {
-				printf("\nInvalid Entry, Please Try again.\n");
-				return false;
-			}
-			printf("Back to Main Menu\n");
-			return true;
-		}
-		else {
-			if (isdigit(userInput[i]) == 0) {
-				printf("\nInvalid Entry, Please Try again.\n");
-				return false;
-			}
-		}
-	}
-
-	FILE* fp = fopen(FILENAME, "r");
-
-	if (fp == NULL) {
-		fprintf(stderr, "Error Accessing File\n");
-		return false;
-	}
-
-	char fileText[BUFFER] = { 0 };
-	char unbooked[NAMELIMIT] = "empty";
-	char LINE[LINESIZE];
-
-	char* booked = "booked";
-
-	int userInputAsInt = atoi(userInput);
-
-
-	if (userInputAsInt < 1 || userInputAsInt > MAXROOMS) {
-		printf("\nInvalid Entry, Please Try again.\n");
-		return false;
-	}
-
-	for (int i = 0; i < userInputAsInt; i++) {
-		(fgets(fileText, LINESIZE, fp));
-	}
-
-	if (strstr(fileText, booked)) {
-		printf("This Room is Already Booked. Please Select Again.\n\n ");
-		printf("Back to Main Menu\n");
-		return true;
-	}
-
-	fclose(fp);
-	char firstName[NAMELIMIT];
-	char lastName[NAMELIMIT];
-
-	printf("Enter The First Name: ");
-	scanf("\n%s", firstName);
-
-	int firstNameLength = strlen(firstName);
-
-	for (int i = 0; i < firstNameLength; i++) {
-		if (!isalpha(firstName[i])) {
-			printf("\nInvalid Entry, Please Try again.\n");
-			return false;
-		}
-	}
-
-	printf("Enter The Last Name: ");
-	scanf("\n%s", lastName);
-
-	int lastNameLength = strlen(lastName);
-
-
-	
-	for (int i = 0; i < lastNameLength; i++) {
-		if (!isalpha(lastName[i])) {
-			printf("\nInvalid Entry, Please Try again.\n");
-			return false;
-		}
-	}
-
-	bool userSelection = true;
-	userSelection = AddRoom(rooms, userInputAsInt, "booked", firstName, lastName);
-	
-	fclose(fp);
-	return userSelection;
-}
-
-
-bool DeleteABooking() {
-	printf("Delete a Booking\n\n");
-
-	char userInput[INPUTLIMIT] = "";
-
-		printf("Which Bookin would you Like to delete (Enter B to go back to main menu): ");
-		scanf(" %s", &userInput);
-		int lengthOfInput = strlen(userInput);
-
-
-		for (int i = 0; i < lengthOfInput; i++) {
-			if (isdigit(userInput[i]) != 0) {
-
-			}
-
-			else if (userInput[i] != 'b' && userInput[i] != 'B') {
-
-				printf("\nInvalid Entry, Please Try again.\n");
-				return false;
-			}
-
-			else if (userInput[i] == 'b' || userInput[i] == 'B') {
-				if (lengthOfInput > 1) {
-					printf("\nInvalid Entry, Please Try again.\n");
-					return false;
-				}
-				printf("Back to Main Menu\n");
-				return true;
-			}
-			else {
-				if (isdigit(userInput[i]) == 0) {
-					printf("\nInvalid Entry, Please Try again.\n");
-					return false;
-				}
-			}
-		}
-
-		FILE* fp = fopen(FILENAME, "r");
-
-		if (fp == NULL) {
-			fprintf(stderr, "Error Accessing File");
-			return false;
-		}
-
-		char fileText[BUFFER] = { 0 };
-		char LINE[LINESIZE];
-
-		char* unbooked = "empty";
-		int userInputAsInt = atoi(userInput);
-
-
-		if (userInputAsInt < 1 || userInputAsInt > MAXROOMS) {
-			printf("\nInvalid Entry, Please Try again.\n");
-			return false;
-		}
-
-		for (int i = 0; i < userInputAsInt; i++) {
-			(fgets(fileText, LINESIZE, fp));
-		}
-
-		if (strstr(fileText, unbooked)) {
-			printf("There is no booking in Room %d. Please Select Again.\n", userInputAsInt);
-			printf("Back to Main Menu\n");
-			return true;
-		}
-
-		fclose(fp);
-
-		bool userSelection = true; 
-		userSelection = DeleteRoom(rooms, userInputAsInt, "empty", "", "");
-
-		fclose(fp);
-		return userSelection;
-	}
-
-
-bool MainMenu() {
+//***** MENU FUNCTION ******
+bool TopMenu(ROOMS* rooms) {
 	printf("\n*** MAIN MENU ***\n\n");
 
-	printf("A: See Number of empty rooms\n");
+	printf("A: Hotel One (Original)\n");
 	printf("______________________________\n\n");
-	printf("B: See List of empty rooms\n");
+	printf("B: Hotel Two (New)\n");
 	printf("______________________________\n\n");
-	printf("C: See Ordered List of Guests\n");
-	printf("______________________________\n\n");
-	printf("D: Book A Room\n");
-	printf("______________________________\n\n");
-	printf("E: Delete a Booking\n");
+	printf("C: See All Current Bookings\n");
 	printf("______________________________\n\n");
 	printf("F: Exit\n");
 	printf("______________________________\n\n");
 
 	char userSelection;
 	printf("Select an Option: ");
-	int userSelectionSymbols = scanf(" %c", &userSelection);
+	(void)scanf(" %c", &userSelection);
 	userSelection = toupper(userSelection);
 
 	bool ProgramStatus = true;
@@ -692,32 +214,27 @@ bool MainMenu() {
 	switch (userSelection) {
 
 	case 'A':
-		ProgramStatus = NumberOfEmptyRooms();
+		ProgramStatus = MainMenuOne(rooms);
 		return ProgramStatus;
 
 	case 'B':
-		ProgramStatus = ListOfEmptyRooms();
+		ProgramStatus = MainMenuTwo(rooms);
 		return ProgramStatus;
 
 	case 'C':
-		ProgramStatus = AlphaOrderGuests();
-		return ProgramStatus;
-
-	case 'D':
-		ProgramStatus = BookARoom();
-		return ProgramStatus;
-
-	case 'E':
-		ProgramStatus = DeleteABooking();
+		PrintAllRooms(rooms);
 		return ProgramStatus;
 
 	case 'F':
-		return false;
+		ProgramStatus = false;
+		return ProgramStatus;
 
 	default:
 		printf("Invalid Entry");
-		return false;
+		ProgramStatus = false;
+		return ProgramStatus;
 
 	}
-	return true;
+
+	return ProgramStatus;
 }
